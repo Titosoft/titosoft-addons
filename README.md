@@ -8,7 +8,7 @@ Repositório **público** de add-ons da TitoSoft para instalação via interface
 2. Menu **⋮** (canto superior direito) → **Repositórios**.
 3. Cole a URL deste repositório e clique em **Adicionar**:
    ```
-   https://github.com/titosoft/titosoft-addons
+   https://github.com/Titosoft/titosoft-addons
    ```
 4. Feche. O add-on **TitoSoft Agent** aparece na loja, seção *TitoSoft Add-ons*.
 

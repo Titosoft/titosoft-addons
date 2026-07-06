@@ -5,7 +5,7 @@ name: TitoSoft Agent
 version: "0.1.0"
 slug: titosoft_agent
 description: Conecta este Home Assistant à plataforma MSP TitoSoft (monitoramento, inventário e backup criptografado).
-url: https://github.com/titosoft/titosoft-addons/tree/main/titosoft_agent
+url: https://github.com/Titosoft/titosoft-addons/tree/main/titosoft_agent
 # stable | experimental | deprecated — controla o selo do add-on na loja.
 stage: experimental
 # application = processo de longa duração; manual = não inicia sozinho antes de
