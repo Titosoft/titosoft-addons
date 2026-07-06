@@ -1,0 +1,6 @@
+# Manifesto do repositório de add-ons do Home Assistant.
+# É isto que o HA lê quando o usuário adiciona a URL deste repo em
+# Ajustes → Add-ons → Loja → ⋮ → Repositórios.
+name: TitoSoft Add-ons
+url: https://github.com/titosoft/titosoft-addons
+maintainer: TitoSoft <ops@titosoft.example>

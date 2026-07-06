@@ -1,0 +1,39 @@
+# Manifest do add-on TitoSoft Agent (distribuição via repositório público).
+# O HA constrói a imagem localmente a partir do Dockerfile/build.yaml.
+# Docs: https://developers.home-assistant.io/docs/apps/configuration/
+name: TitoSoft Agent
+version: "0.1.0"
+slug: titosoft_agent
+description: Conecta este Home Assistant à plataforma MSP TitoSoft (monitoramento, inventário e backup criptografado).
+url: https://github.com/titosoft/titosoft-addons/tree/main/titosoft_agent
+# stable | experimental | deprecated — controla o selo do add-on na loja.
+stage: experimental
+# application = processo de longa duração; manual = não inicia sozinho antes de
+# ser configurado (evita crash-loop sem enrollment). Ative "iniciar no boot" na
+# UI depois do primeiro enrollment.
+startup: application
+boot: manual
+arch:
+  - aarch64
+  - amd64
+init: false
+# Acesso às APIs locais (leitura + backups na Fase 1)
+homeassistant_api: true
+hassio_api: true
+hassio_role: manager
+options:
+  api_base_url: "http://192.168.1.10:8000"
+  enrollment_token: ""
+  heartbeat_interval_seconds: 60
+  inventory_every_n_heartbeats: 5
+  backup_enabled: true
+  backup_every_n_heartbeats: 1440
+  backup_encryption_key: ""
+schema:
+  api_base_url: url
+  enrollment_token: str
+  heartbeat_interval_seconds: int(10,3600)
+  inventory_every_n_heartbeats: int(1,1440)
+  backup_enabled: bool
+  backup_every_n_heartbeats: int(1,100000)
+  backup_encryption_key: password
