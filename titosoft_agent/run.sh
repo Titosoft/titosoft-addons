@@ -1,7 +1,19 @@
 #!/usr/bin/env sh
-# Entrypoint do add-on: converte /data/options.json em variáveis de ambiente
-# e inicia o agente. SUPERVISOR_TOKEN é injetado automaticamente pelo Supervisor.
+# Entrypoint do add-on: carrega o ambiente do container, converte
+# /data/options.json em variáveis de ambiente e inicia o agente.
 set -e
+
+# s6-overlay (base image do HA) roda o CMD com um ambiente mínimo: as variáveis
+# do container — incluindo SUPERVISOR_TOKEN — ficam como arquivos aqui. Sem isto,
+# o adapter supervisor falha com "SUPERVISOR_TOKEN ausente". No build standalone
+# (python:3.12-slim) a pasta não existe e o bloco é ignorado.
+if [ -d /run/s6/container_environment ]; then
+  for f in /run/s6/container_environment/*; do
+    if [ -f "$f" ]; then
+      export "$(basename "$f")=$(cat "$f")"
+    fi
+  done
+fi
 
 OPTIONS=/data/options.json
 
