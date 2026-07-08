@@ -2,7 +2,7 @@
 # O HA constrói a imagem localmente a partir do Dockerfile/build.yaml.
 # Docs: https://developers.home-assistant.io/docs/apps/configuration/
 name: TitoSoft Agent
-version: "0.1.1"
+version: "0.1.2"
 slug: titosoft_agent
 description: Conecta este Home Assistant à plataforma MSP TitoSoft (monitoramento, inventário e backup criptografado).
 url: https://github.com/Titosoft/titosoft-addons/tree/main/titosoft_agent

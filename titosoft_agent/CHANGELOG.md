@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Inventário não envia mais entradas de "serviço" do HA (Supervisor, Core, OS,
+  add-ons como Backup/SSH) nem entidades órfãs de sistema (sun, zone, automações).
+  Só dispositivos físicos entram no CMDB. (Requer a central atualizada para
+  remover os que já estavam listados.)
+
 ## 0.1.1
 
 - Corrige inicialização como add-on: carrega o ambiente do container (s6-overlay)

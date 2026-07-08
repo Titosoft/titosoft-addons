@@ -91,3 +91,29 @@ def test_normalize_entities():
     assert battery["device_external_id"] == "dev-z2m-1"
     assert battery["state"] == "17"
     assert battery["domain"] == "sensor"
+
+
+def test_service_devices_and_orphan_entities_excluded():
+    """Add-ons/Supervisor/Backup (entry_type=service) e entidades órfãs de sistema
+    não devem entrar no inventário."""
+    devices_reg = DEVICE_REGISTRY + [
+        {"id": "dev-supervisor", "name": "Supervisor", "entry_type": "service", "identifiers": [["hassio", "supervisor"]]},
+        {"id": "dev-addon-backup", "name": "Backup", "entry_type": "service", "identifiers": [["hassio", "core_backup"]]},
+    ]
+    entities_reg = ENTITY_REGISTRY + [
+        {"entity_id": "update.backup_update", "device_id": "dev-addon-backup", "platform": "hassio", "original_name": "Backup"},
+        {"entity_id": "sun.sun", "device_id": None, "platform": "sun", "original_name": "Sun"},
+        {"entity_id": "automation.luzes_noite", "device_id": None, "platform": "automation", "original_name": "Luzes"},
+    ]
+    devices, entities = normalize_inventory(devices_reg, entities_reg, AREA_REGISTRY, STATES)
+
+    ids = {d["external_id"] for d in devices}
+    assert "dev-supervisor" not in ids
+    assert "dev-addon-backup" not in ids
+    assert ids == {"dev-z2m-1", "dev-zha-1", "dev-tuya-1"}  # só dispositivos reais
+
+    ent_ids = {e["entity_id"] for e in entities}
+    assert "update.backup_update" not in ent_ids
+    assert "sun.sun" not in ent_ids
+    assert "automation.luzes_noite" not in ent_ids
+    assert len(entities) == 5  # só as dos 3 dispositivos reais

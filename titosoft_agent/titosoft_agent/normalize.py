@@ -57,8 +57,15 @@ def normalize_inventory(
             entities_by_device.setdefault(entry["device_id"], []).append(entry)
 
     devices_out: List[Dict[str, Any]] = []
+    kept_device_ids: set = set()
     for device in device_registry:
+        # Pula entradas de "serviço" do HA: Supervisor, Core, OS, add-ons (Backup,
+        # SSH, File editor...) e integrações que se registram como serviço.
+        # Dispositivos físicos têm entry_type == null. Isso é o que polui a lista.
+        if device.get("entry_type") == "service":
+            continue
         device_id = device["id"]
+        kept_device_ids.add(device_id)
         entries = entities_by_device.get(device_id, [])
         platforms = sorted({e.get("platform") for e in entries if e.get("platform")})
         protocol, integration = _infer_protocol_integration(device, platforms)
@@ -117,6 +124,11 @@ def normalize_inventory(
 
     entities_out: List[Dict[str, Any]] = []
     for entry in entity_registry:
+        # Só entidades de dispositivos reais entram no CMDB. Isso descarta as de
+        # serviço/add-on (filtradas acima) e órfãs de sistema (sun, zone, automações,
+        # update.*, persistent_notification...) que não têm valor operacional.
+        if entry.get("device_id") not in kept_device_ids:
+            continue
         state = states_by_entity.get(entry["entity_id"], {})
         entities_out.append(
             {
