@@ -1,0 +1,12 @@
+# Changelog
+
+## 0.1.1
+
+- Corrige inicialização como add-on: carrega o ambiente do container (s6-overlay)
+  para enxergar o `SUPERVISOR_TOKEN`. Antes o add-on falhava com
+  "SUPERVISOR_TOKEN ausente".
+
+## 0.1.0
+
+- Primeira versão: enrollment, heartbeat, inventário (Supervisor + REST/WebSocket)
+  e backup full criptografado (AES-256-GCM) para storage S3-compatible.
