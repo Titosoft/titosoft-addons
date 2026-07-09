@@ -9,8 +9,9 @@ def test_factory_returns_mock():
 
 
 def test_heartbeat_payload_shape():
-    payload = build_heartbeat(MockHomeAssistantAdapter())
+    payload = build_heartbeat(MockHomeAssistantAdapter(), agent_version="0.2.0")
     assert payload["status"] == "online"
+    assert payload["agent_version"] == "0.2.0"
     assert payload["ha"]["core_version"]
     assert payload["ha"]["installation_type"] == "Home Assistant OS"
     assert 0 <= payload["host"]["disk_used_percent"] <= 100

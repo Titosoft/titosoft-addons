@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Envia a versão atual do agente em todo heartbeat para manter o portal correto
+  após upgrades do add-on.
+
 ## 0.2.0
 
 - Adiciona ações remotas assinadas pela central via heartbeat outbound.

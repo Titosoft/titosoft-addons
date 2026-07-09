@@ -65,7 +65,7 @@ def run() -> None:
     while True:
         # Heartbeat
         try:
-            heartbeat = client.send_heartbeat(build_heartbeat(adapter))
+            heartbeat = client.send_heartbeat(build_heartbeat(adapter, agent_version=__version__))
             if heartbeat.get("central_public_key") and heartbeat.get("central_public_key") != central_public_key:
                 central_public_key = heartbeat["central_public_key"]
                 save_credentials(client.agent_id, client.agent_token, central_public_key)
