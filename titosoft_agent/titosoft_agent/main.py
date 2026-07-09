@@ -18,6 +18,7 @@ from titosoft_agent.collector import build_heartbeat, build_inventory
 from titosoft_agent.config import AgentConfig
 from titosoft_agent.credentials import load_credentials, save_credentials
 from titosoft_agent.crypto import encrypt_backup
+from titosoft_agent.remote_actions import execute_action
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s [%(name)s] %(message)s")
 logger = logging.getLogger("titosoft.agent")
@@ -29,8 +30,10 @@ def run() -> None:
 
     # Credenciais: env > arquivo persistido > enrollment
     agent_id, agent_token = config.agent_id, config.agent_token
+    central_public_key = config.central_public_key
     if not (agent_id and agent_token):
-        agent_id, agent_token = load_credentials()
+        agent_id, agent_token, stored_public_key = load_credentials()
+        central_public_key = central_public_key or stored_public_key
     client = CentralApiClient(config.api_base_url, agent_id, agent_token)
 
     logger.info("TitoSoft Agent v%s | api=%s adapter=%s", __version__, config.api_base_url, config.adapter)
@@ -55,13 +58,25 @@ def run() -> None:
         except Exception:  # noqa: BLE001 — HA pode estar reiniciando
             hostname = None
         data = client.enroll(config.enrollment_token, __version__, hostname)
-        save_credentials(data["agent_id"], data["agent_token"])
+        central_public_key = data.get("central_public_key")
+        save_credentials(data["agent_id"], data["agent_token"], central_public_key)
 
     heartbeat_count = 0
     while True:
         # Heartbeat
         try:
-            client.send_heartbeat(build_heartbeat(adapter))
+            heartbeat = client.send_heartbeat(build_heartbeat(adapter))
+            if heartbeat.get("central_public_key") and heartbeat.get("central_public_key") != central_public_key:
+                central_public_key = heartbeat["central_public_key"]
+                save_credentials(client.agent_id, client.agent_token, central_public_key)
+            for command in heartbeat.get("pending_actions", []):
+                execute_action(
+                    command,
+                    central_public_key=central_public_key,
+                    adapter=adapter,
+                    client=client,
+                    backup_encryption_key=config.backup_encryption_key,
+                )
             logger.info("Heartbeat enviado (#%d)", heartbeat_count + 1)
         except (httpx.HTTPError, RuntimeError) as exc:
             logger.error("Falha ao enviar heartbeat: %s", exc)

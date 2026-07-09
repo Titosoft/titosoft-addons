@@ -155,3 +155,9 @@ class SupervisorApiAdapter(HomeAssistantAdapter):
         resp.raise_for_status()
         content = resp.content
         return {"filename": f"{name}.tar", "content": content, "size_bytes": len(content), "slug": slug}
+
+    def restart_addon(self, slug: str) -> Dict[str, Any]:
+        if slug not in SERVICE_ADDONS:
+            raise ValueError(f"Add-on não permitido para restart remoto: {slug}")
+        self._post(f"/addons/{slug}/restart", timeout=120)
+        return {"slug": slug, "status": "restart_requested"}

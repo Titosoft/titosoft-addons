@@ -72,3 +72,13 @@ class CentralApiClient:
             logger.error("Falha no upload do backup: %s", exc)
             report = {"status": "failed", "error_message": f"Upload falhou: {exc}"}
         return self._post(f"/v1/agents/{self.agent_id}/backups/{backup_id}/report", report)
+
+    def report_remote_action(
+        self,
+        action_id: str,
+        status: str,
+        result: Optional[Dict[str, Any]] = None,
+        error_message: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        payload = {"status": status, "result": result or {}, "error_message": error_message}
+        return self._post(f"/v1/agents/{self.agent_id}/remote-actions/{action_id}/report", payload)

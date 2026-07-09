@@ -13,6 +13,7 @@ class AgentConfig:
     api_base_url: str = field(default_factory=lambda: os.environ.get("TITOSOFT_API_URL", "http://localhost:8000"))
     agent_id: Optional[str] = field(default_factory=lambda: os.environ.get("AGENT_ID") or None)
     agent_token: Optional[str] = field(default_factory=lambda: os.environ.get("AGENT_TOKEN") or None)
+    central_public_key: Optional[str] = field(default_factory=lambda: os.environ.get("CENTRAL_PUBLIC_KEY") or None)
     enrollment_token: Optional[str] = field(default_factory=lambda: os.environ.get("ENROLLMENT_TOKEN") or None)
     heartbeat_interval_seconds: int = field(default_factory=lambda: int(os.environ.get("HEARTBEAT_INTERVAL_SECONDS", "60")))
     # A cada N heartbeats envia inventário (default: 5 -> ~5 min com heartbeat de 60s)

@@ -22,20 +22,23 @@ def _credentials_path() -> Path:
     return Path.home() / ".titosoft-agent.json"
 
 
-def load_credentials() -> Tuple[Optional[str], Optional[str]]:
+def load_credentials() -> Tuple[Optional[str], Optional[str], Optional[str]]:
     path = _credentials_path()
     if not path.exists():
-        return None, None
+        return None, None, None
     try:
         data = json.loads(path.read_text())
-        return data.get("agent_id"), data.get("agent_token")
+        return data.get("agent_id"), data.get("agent_token"), data.get("central_public_key")
     except (json.JSONDecodeError, OSError) as exc:
         logger.error("Falha ao ler credenciais em %s: %s", path, exc)
-        return None, None
+        return None, None, None
 
 
-def save_credentials(agent_id: str, agent_token: str) -> None:
+def save_credentials(agent_id: str, agent_token: str, central_public_key: Optional[str] = None) -> None:
     path = _credentials_path()
-    path.write_text(json.dumps({"agent_id": agent_id, "agent_token": agent_token}))
+    payload = {"agent_id": agent_id, "agent_token": agent_token}
+    if central_public_key:
+        payload["central_public_key"] = central_public_key
+    path.write_text(json.dumps(payload))
     os.chmod(path, 0o600)
     logger.info("Credenciais do agente salvas em %s", path)

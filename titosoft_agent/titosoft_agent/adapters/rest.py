@@ -100,3 +100,8 @@ class RestApiAdapter(HomeAssistantAdapter):
         raise NotImplementedError(
             "Backup com download do arquivo requer Supervisor (HAOS). Use ADAPTER=supervisor."
         )
+
+    def restart_addon(self, slug: str) -> Dict[str, Any]:
+        raise NotImplementedError(
+            f"Restart do add-on {slug} requer Supervisor (HAOS). Use ADAPTER=supervisor."
+        )

@@ -159,3 +159,6 @@ class MockHomeAssistantAdapter(HomeAssistantAdapter):
             "content": payload,
             "size_bytes": len(payload),
         }
+
+    def restart_addon(self, slug: str) -> Dict[str, Any]:
+        return {"slug": slug, "status": "restart_requested_mock"}

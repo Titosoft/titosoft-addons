@@ -38,3 +38,7 @@ class HomeAssistantAdapter(ABC):
     @abstractmethod
     def create_local_backup(self) -> Dict[str, Any]:
         """Dispara backup local. Fase 1: simulado; Fase 2: Supervisor API."""
+
+    @abstractmethod
+    def restart_addon(self, slug: str) -> Dict[str, Any]:
+        """Reinicia um add-on permitido via Supervisor API."""
