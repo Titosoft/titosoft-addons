@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- Adiciona ações remotas assinadas pela central via heartbeat outbound.
+- Executa `backup_now` e `restart_addon` com allowlist e relatório de resultado.
+- Persiste a chave pública da central recebida no enrollment/heartbeat.
+
 ## 0.1.2
 
 - Inventário não envia mais entradas de "serviço" do HA (Supervisor, Core, OS,
