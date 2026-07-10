@@ -75,13 +75,30 @@ def normalize_inventory(
         lqi: Optional[float] = None
         any_available = False
         has_state = False
+        available_entities: List[str] = []
+        unavailable_entities: List[str] = []
+        unknown_entities: List[str] = []
+        latest_state_change: Optional[str] = None
+        latest_state_update: Optional[str] = None
         for entry in entries:
             state = states_by_entity.get(entry["entity_id"])
             if not state:
                 continue
             has_state = True
-            if state.get("state") not in ("unavailable", "unknown"):
+            entity_state = state.get("state")
+            if entity_state == "unavailable":
+                unavailable_entities.append(entry["entity_id"])
+            elif entity_state == "unknown":
+                unknown_entities.append(entry["entity_id"])
+            else:
                 any_available = True
+                available_entities.append(entry["entity_id"])
+            changed_at = state.get("last_changed")
+            updated_at = state.get("last_updated")
+            if changed_at and (latest_state_change is None or changed_at > latest_state_change):
+                latest_state_change = changed_at
+            if updated_at and (latest_state_update is None or updated_at > latest_state_update):
+                latest_state_update = updated_at
             attrs = state.get("attributes") or {}
             if attrs.get("device_class") == "battery":
                 try:
@@ -118,6 +135,15 @@ def normalize_inventory(
                     "identifiers": device.get("identifiers"),
                     "connections": device.get("connections"),
                     "via_device_id": device.get("via_device_id"),
+                    "state_summary": {
+                        "entities_total": len(entries),
+                        "entities_with_state": len(available_entities) + len(unavailable_entities) + len(unknown_entities),
+                        "available_entities": available_entities,
+                        "unavailable_entities": unavailable_entities,
+                        "unknown_entities": unknown_entities,
+                        "last_state_change_at": latest_state_change,
+                        "last_state_update_at": latest_state_update,
+                    },
                 },
             }
         )

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Envia evidências de disponibilidade por entidade para diagnóstico de dispositivos.
+- Aceita ação remota assinada para coleta imediata de diagnóstico/inventário.
+
 ## 0.2.1
 
 - Envia a versão atual do agente em todo heartbeat para manter o portal correto

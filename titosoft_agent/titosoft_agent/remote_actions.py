@@ -9,11 +9,12 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 from titosoft_agent.api_client import CentralApiClient
+from titosoft_agent.collector import build_inventory
 from titosoft_agent.crypto import encrypt_backup
 
 logger = logging.getLogger("titosoft.agent.remote_actions")
 
-ALLOWED_ACTIONS = ("backup_now", "restart_addon")
+ALLOWED_ACTIONS = ("backup_now", "restart_addon", "diagnose_device")
 ALLOWED_RESTART_ADDONS = ("zigbee2mqtt", "core_mosquitto", "core_matter_server")
 
 
@@ -54,6 +55,10 @@ def verify_action(command: Dict[str, Any], central_public_key: str) -> Dict[str,
     payload = signed_payload.get("payload") or {}
     if action_type == "restart_addon" and payload.get("slug") not in ALLOWED_RESTART_ADDONS:
         raise ValueError(f"add-on não permitido: {payload.get('slug')}")
+    if action_type == "diagnose_device":
+        device_external_id = payload.get("device_external_id")
+        if not isinstance(device_external_id, str) or not device_external_id.strip():
+            raise ValueError("device_external_id inválido")
     return {"id": action_id, "action_type": action_type, "payload": payload}
 
 
@@ -87,6 +92,20 @@ def execute_action(
             result = client.upload_backup(filename, payload, encryption_provider=provider)
         elif action["action_type"] == "restart_addon":
             result = adapter.restart_addon(action["payload"]["slug"])
+        elif action["action_type"] == "diagnose_device":
+            inventory = build_inventory(adapter)
+            device_external_id = action["payload"]["device_external_id"]
+            matched = next(
+                (device for device in inventory["devices"] if device.get("external_id") == device_external_id),
+                None,
+            )
+            inventory_result = client.send_inventory(inventory)
+            result = {
+                "device_external_id": device_external_id,
+                "device_found": matched is not None,
+                "availability_status": matched.get("availability_status") if matched else None,
+                "inventory": inventory_result,
+            }
         else:
             raise ValueError(f"ação não implementada: {action['action_type']}")
         client.report_remote_action(action["id"], "succeeded", result=result)

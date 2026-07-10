@@ -51,7 +51,7 @@ AREA_REGISTRY = [
 ]
 
 STATES = [
-    {"entity_id": "binary_sensor.porta_entrada", "state": "off", "attributes": {}},
+    {"entity_id": "binary_sensor.porta_entrada", "state": "off", "attributes": {}, "last_changed": "2026-07-10T11:00:00+00:00", "last_updated": "2026-07-10T11:01:00+00:00"},
     {"entity_id": "sensor.porta_entrada_battery", "state": "17", "attributes": {"device_class": "battery", "unit_of_measurement": "%"}},
     {"entity_id": "sensor.porta_entrada_linkquality", "state": "144", "attributes": {"unit_of_measurement": "lqi"}},
     {"entity_id": "binary_sensor.movimento_sala", "state": "unavailable", "attributes": {}},
@@ -72,11 +72,20 @@ def test_normalize_devices():
     assert z2m["battery_percent"] == 17.0
     assert z2m["lqi"] == 144.0
     assert z2m["availability_status"] == "online"
+    summary = z2m["raw_payload"]["state_summary"]
+    assert summary["entities_with_state"] == 3
+    assert summary["available_entities"] == [
+        "binary_sensor.porta_entrada",
+        "sensor.porta_entrada_battery",
+        "sensor.porta_entrada_linkquality",
+    ]
+    assert summary["last_state_update_at"] == "2026-07-10T11:01:00+00:00"
 
     zha = by_id["dev-zha-1"]
     assert zha["integration"] == "zha"
     assert zha["protocol"] == "zigbee"
     assert zha["availability_status"] == "offline"  # única entidade unavailable
+    assert zha["raw_payload"]["state_summary"]["unavailable_entities"] == ["binary_sensor.movimento_sala"]
     assert zha["area"] == "Sala"
 
     tuya = by_id["dev-tuya-1"]
