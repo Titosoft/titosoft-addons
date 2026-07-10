@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+- Aceita ação remota assinada `update_core` para atualizar o HA Core a uma versão
+  validada (rollout canário lab→piloto→produção coordenado pela central).
+- Backup full automático é disparado antes de cada atualização de Core.
+
 ## 0.3.0
 
 - Envia evidências de disponibilidade por entidade para diagnóstico de dispositivos.

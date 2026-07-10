@@ -2,6 +2,7 @@
 import base64
 import json
 import logging
+import re
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
@@ -14,8 +15,11 @@ from titosoft_agent.crypto import encrypt_backup
 
 logger = logging.getLogger("titosoft.agent.remote_actions")
 
-ALLOWED_ACTIONS = ("backup_now", "restart_addon", "diagnose_device")
+ALLOWED_ACTIONS = ("backup_now", "restart_addon", "diagnose_device", "update_core")
 ALLOWED_RESTART_ADDONS = ("zigbee2mqtt", "core_mosquitto", "core_matter_server")
+# Versão do HA Core: ex. 2026.6, 2026.6.4, 2026.6.0b3. Defesa em profundidade —
+# a central já valida, mas o agente nunca confia cegamente no payload.
+CORE_VERSION_RE = re.compile(r"^\d{4}\.\d{1,2}(\.\d+)?(b\d+)?$")
 
 
 def _b64decode(value: str) -> bytes:
@@ -59,6 +63,10 @@ def verify_action(command: Dict[str, Any], central_public_key: str) -> Dict[str,
         device_external_id = payload.get("device_external_id")
         if not isinstance(device_external_id, str) or not device_external_id.strip():
             raise ValueError("device_external_id inválido")
+    if action_type == "update_core":
+        version = payload.get("version")
+        if not isinstance(version, str) or not CORE_VERSION_RE.match(version.strip()):
+            raise ValueError(f"versão de Core inválida: {version}")
     return {"id": action_id, "action_type": action_type, "payload": payload}
 
 
@@ -92,6 +100,8 @@ def execute_action(
             result = client.upload_backup(filename, payload, encryption_provider=provider)
         elif action["action_type"] == "restart_addon":
             result = adapter.restart_addon(action["payload"]["slug"])
+        elif action["action_type"] == "update_core":
+            result = adapter.update_core(action["payload"]["version"])
         elif action["action_type"] == "diagnose_device":
             inventory = build_inventory(adapter)
             device_external_id = action["payload"]["device_external_id"]

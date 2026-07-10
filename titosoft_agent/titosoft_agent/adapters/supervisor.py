@@ -161,3 +161,10 @@ class SupervisorApiAdapter(HomeAssistantAdapter):
             raise ValueError(f"Add-on não permitido para restart remoto: {slug}")
         self._post(f"/addons/{slug}/restart", timeout=120)
         return {"slug": slug, "status": "restart_requested"}
+
+    def update_core(self, version: str) -> Dict[str, Any]:
+        """Atualiza o HA Core via Supervisor. O Supervisor faz backup parcial do
+        Core por padrão; o backup full já foi disparado antes desta ação."""
+        logger.info("Atualizando HA Core para %s (pode reiniciar o Core)...", version)
+        self._post("/core/update", {"version": version}, timeout=self.backup_timeout)
+        return {"version": version, "status": "update_requested"}

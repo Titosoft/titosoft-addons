@@ -57,6 +57,41 @@ def test_verify_action_rejects_tampered_payload():
         verify_action(data["command"], data["public"])
 
 
+def test_verify_action_accepts_update_core():
+    data = _command("update_core", {"version": "2026.7.0"})
+    action = verify_action(data["command"], data["public"])
+    assert action["action_type"] == "update_core"
+    assert action["payload"] == {"version": "2026.7.0"}
+
+
+def test_verify_action_rejects_bad_core_version():
+    data = _command("update_core", {"version": "latest; rm -rf"})
+    with pytest.raises(ValueError):
+        verify_action(data["command"], data["public"])
+
+
+def test_execute_update_core_calls_adapter():
+    data = _command("update_core", {"version": "2026.7.0"})
+
+    class FakeClient:
+        def __init__(self):
+            self.reports = []
+
+        def report_remote_action(self, action_id, status, result=None, error_message=None):
+            self.reports.append((action_id, status, result, error_message))
+
+    client = FakeClient()
+    execute_action(
+        data["command"],
+        central_public_key=data["public"],
+        adapter=MockHomeAssistantAdapter(),
+        client=client,
+        backup_encryption_key=None,
+    )
+    assert [r[1] for r in client.reports] == ["running", "succeeded"]
+    assert client.reports[-1][2] == {"version": "2026.7.0", "status": "update_requested_mock"}
+
+
 def test_execute_device_diagnosis_refreshes_full_inventory():
     data = _command("diagnose_device", {"device_external_id": "z2m-0x00158d0001demo01"})
 

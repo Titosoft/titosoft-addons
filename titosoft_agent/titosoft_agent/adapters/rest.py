@@ -105,3 +105,8 @@ class RestApiAdapter(HomeAssistantAdapter):
         raise NotImplementedError(
             f"Restart do add-on {slug} requer Supervisor (HAOS). Use ADAPTER=supervisor."
         )
+
+    def update_core(self, version: str) -> Dict[str, Any]:
+        raise NotImplementedError(
+            f"Update do Core para {version} requer Supervisor (HAOS). Use ADAPTER=supervisor."
+        )

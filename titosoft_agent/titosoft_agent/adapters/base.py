@@ -42,3 +42,7 @@ class HomeAssistantAdapter(ABC):
     @abstractmethod
     def restart_addon(self, slug: str) -> Dict[str, Any]:
         """Reinicia um add-on permitido via Supervisor API."""
+
+    @abstractmethod
+    def update_core(self, version: str) -> Dict[str, Any]:
+        """Atualiza o HA Core para uma versão (rollout canário, Fase 2)."""

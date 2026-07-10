@@ -162,3 +162,6 @@ class MockHomeAssistantAdapter(HomeAssistantAdapter):
 
     def restart_addon(self, slug: str) -> Dict[str, Any]:
         return {"slug": slug, "status": "restart_requested_mock"}
+
+    def update_core(self, version: str) -> Dict[str, Any]:
+        return {"version": version, "status": "update_requested_mock"}
