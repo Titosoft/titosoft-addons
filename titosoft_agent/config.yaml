@@ -2,7 +2,7 @@
 # O HA constrói a imagem localmente a partir do Dockerfile/build.yaml.
 # Docs: https://developers.home-assistant.io/docs/apps/configuration/
 name: TitoSoft Agent
-version: "0.4.0"
+version: "0.5.0"
 slug: titosoft_agent
 description: Conecta este Home Assistant à plataforma MSP TitoSoft (monitoramento, inventário e backup criptografado).
 url: https://github.com/Titosoft/titosoft-addons/tree/main/titosoft_agent
@@ -29,6 +29,12 @@ options:
   backup_enabled: true
   backup_every_n_heartbeats: 1440
   backup_encryption_key: ""
+  z2m_mqtt_enabled: false
+  z2m_mqtt_host: "core-mosquitto"
+  z2m_mqtt_port: 1883
+  z2m_mqtt_username: ""
+  z2m_mqtt_password: ""
+  z2m_mqtt_base_topic: "zigbee2mqtt"
 schema:
   api_base_url: url
   enrollment_token: str
@@ -37,3 +43,9 @@ schema:
   backup_enabled: bool
   backup_every_n_heartbeats: int(1,100000)
   backup_encryption_key: password
+  z2m_mqtt_enabled: bool
+  z2m_mqtt_host: str
+  z2m_mqtt_port: int(1,65535)
+  z2m_mqtt_username: str?
+  z2m_mqtt_password: password?
+  z2m_mqtt_base_topic: str

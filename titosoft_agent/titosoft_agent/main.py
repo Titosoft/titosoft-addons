@@ -84,7 +84,7 @@ def run() -> None:
         # Inventário periódico (inclui o primeiro ciclo)
         if heartbeat_count % config.inventory_every_n_heartbeats == 0:
             try:
-                result = client.send_inventory(build_inventory(adapter))
+                result = client.send_inventory(build_inventory(adapter, config))
                 logger.info("Inventário enviado: %s", result)
             except (httpx.HTTPError, RuntimeError) as exc:
                 logger.error("Falha ao enviar inventário: %s", exc)

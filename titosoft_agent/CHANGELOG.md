@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- Enriquecimento Zigbee2MQTT via MQTT (opt-in `Z2M_MQTT_*`): lê `bridge/devices`
+  e estados para preencher papel na malha (Router/EndDevice), fonte de energia,
+  LQI e last_seen dos dispositivos Zigbee. Degrada graciosamente se o broker
+  estiver indisponível.
+
 ## 0.4.0
 
 - Aceita ação remota assinada `update_core` para atualizar o HA Core a uma versão

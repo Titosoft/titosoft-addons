@@ -27,6 +27,15 @@ class AgentConfig:
     backup_every_n_heartbeats: int = field(default_factory=lambda: int(os.environ.get("BACKUP_EVERY_N_HEARTBEATS", "1440")))
     # Passphrase de criptografia AES-256-GCM do backup (vazio = sem criptografia)
     backup_encryption_key: Optional[str] = field(default_factory=lambda: os.environ.get("BACKUP_ENCRYPTION_KEY") or None)
+    # Enriquecimento Zigbee2MQTT via MQTT (Fase 2 P2.3): LQI, papel na malha
+    # (Router/EndDevice), fonte de energia e last_seen do bridge/devices.
+    z2m_mqtt_enabled: bool = field(default_factory=lambda: os.environ.get("Z2M_MQTT_ENABLED", "false").lower() == "true")
+    z2m_mqtt_host: str = field(default_factory=lambda: os.environ.get("Z2M_MQTT_HOST", "core-mosquitto"))
+    z2m_mqtt_port: int = field(default_factory=lambda: int(os.environ.get("Z2M_MQTT_PORT", "1883")))
+    z2m_mqtt_username: Optional[str] = field(default_factory=lambda: os.environ.get("Z2M_MQTT_USERNAME") or None)
+    z2m_mqtt_password: Optional[str] = field(default_factory=lambda: os.environ.get("Z2M_MQTT_PASSWORD") or None)
+    z2m_mqtt_base_topic: str = field(default_factory=lambda: os.environ.get("Z2M_MQTT_BASE_TOPIC", "zigbee2mqtt"))
+    z2m_mqtt_collect_seconds: float = field(default_factory=lambda: float(os.environ.get("Z2M_MQTT_COLLECT_SECONDS", "4")))
 
     @property
     def enrolled(self) -> bool:

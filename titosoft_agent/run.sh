@@ -28,6 +28,12 @@ if [ -f "$OPTIONS" ]; then
   export BACKUP_ENABLED="$(get_opt backup_enabled)"
   export BACKUP_EVERY_N_HEARTBEATS="$(get_opt backup_every_n_heartbeats)"
   export BACKUP_ENCRYPTION_KEY="$(get_opt backup_encryption_key)"
+  export Z2M_MQTT_ENABLED="$(get_opt z2m_mqtt_enabled)"
+  export Z2M_MQTT_HOST="$(get_opt z2m_mqtt_host)"
+  export Z2M_MQTT_PORT="$(get_opt z2m_mqtt_port)"
+  export Z2M_MQTT_USERNAME="$(get_opt z2m_mqtt_username)"
+  export Z2M_MQTT_PASSWORD="$(get_opt z2m_mqtt_password)"
+  export Z2M_MQTT_BASE_TOPIC="$(get_opt z2m_mqtt_base_topic)"
   export ADAPTER=supervisor
   export CREDENTIALS_PATH=/data/agent_credentials.json
 fi
